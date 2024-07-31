@@ -11,7 +11,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 5283cd193d368b74ca45104a7ca1a8be,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 6.576247
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 5283cd193d368b74ca45104a7ca1a8be,
         type: 3}
@@ -21,7 +21,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 5283cd193d368b74ca45104a7ca1a8be,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.14131546
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 5283cd193d368b74ca45104a7ca1a8be,
         type: 3}
@@ -31,17 +31,17 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 5283cd193d368b74ca45104a7ca1a8be,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 5283cd193d368b74ca45104a7ca1a8be,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 5283cd193d368b74ca45104a7ca1a8be,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 5283cd193d368b74ca45104a7ca1a8be,
         type: 3}
@@ -73,6 +73,11 @@ PrefabInstance:
       propertyPath: m_CastShadows
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: -1251433520776902205, guid: 5283cd193d368b74ca45104a7ca1a8be,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 55957a2f99a6a7746a19fb275664e0bb, type: 2}
     - target: {fileID: 919132149155446097, guid: 5283cd193d368b74ca45104a7ca1a8be,
         type: 3}
       propertyPath: m_Name

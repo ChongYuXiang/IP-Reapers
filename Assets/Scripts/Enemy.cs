@@ -1,3 +1,8 @@
+/* Author: Chong Yu Xiang  
+ * Filename: Enemy
+ * Descriptions: Enemy AI, attack and health
+ */
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;

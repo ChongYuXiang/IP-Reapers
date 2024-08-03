@@ -22,6 +22,9 @@ public class Player : MonoBehaviour
     [SerializeField]
     TextMeshProUGUI description;
 
+    [SerializeField]
+    GameObject flashlight;
+
     private void Update()
     {
         // Draw debug raycast
@@ -50,6 +53,11 @@ public class Player : MonoBehaviour
                 // Deactivate prompt
                 description.gameObject.SetActive(false);
             }
+        }
+
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            flashlight.SetActive(!flashlight.activeInHierarchy);
         }
     }
 }

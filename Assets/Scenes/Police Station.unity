@@ -9379,7 +9379,7 @@ PrefabInstance:
     - target: {fileID: 26931865447925572, guid: afb033cd01ca6874d8ce8b49e742e70d,
         type: 3}
       propertyPath: m_Name
-      value: wallDoubleDoor
+      value: wallDoubleDoorB
       objectReference: {fileID: 0}
     - target: {fileID: 798402461669383678, guid: afb033cd01ca6874d8ce8b49e742e70d,
         type: 3}

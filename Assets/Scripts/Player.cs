@@ -47,6 +47,37 @@ public class Player : MonoBehaviour
                     sceneManager.SendMessage("ChangeScene", 2);
                 }
             }
+
+            // Ray hits police station entrance
+            if (hit.transform.name == "wallDoubleDoorA")
+            {
+                // Activate and change prompt
+                description.text = "Press E to enter";
+                description.gameObject.SetActive(true);
+
+                // Press E to interact
+                if (Input.GetKeyDown(KeyCode.E))
+                {
+                    // Change scene to town
+                    sceneManager.SendMessage("ChangeScene", 3);
+                }
+            }
+
+            // Ray hits police station exit
+            if (hit.transform.name == "wallDoubleDoorB")
+            {
+                // Activate and change prompt
+                description.text = "Press E to exit";
+                description.gameObject.SetActive(true);
+
+                // Press E to interact
+                if (Input.GetKeyDown(KeyCode.E))
+                {
+                    // Change scene to town
+                    sceneManager.SendMessage("ChangeScene", 2);
+                }
+            }
+
             // Not looking at important object
             else
             {

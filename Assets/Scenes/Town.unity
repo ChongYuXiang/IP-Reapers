@@ -8995,7 +8995,7 @@ Light:
   m_Type: 0
   m_Shape: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 3
+  m_Intensity: 20
   m_Range: 15
   m_SpotAngle: 40
   m_InnerSpotAngle: 20
@@ -12754,7 +12754,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 0
-  m_AdditionalShaderChannelsFlag: 0
+  m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0
@@ -13599,7 +13599,7 @@ Transform:
   m_GameObject: {fileID: 659997087550141778}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 1, z: -0, w: 0.0000029504295}
-  m_LocalPosition: {x: -0.07624686, y: 0.4999999, z: -0}
+  m_LocalPosition: {x: -0.5762476, y: 0, z: -0.0000029504338}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -13642,22 +13642,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 149890528844989352}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &2522305909015337782
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 8575001736057285629}
-  m_Layer: 0
-  m_Name: MediumHouse
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
 --- !u!1001 &2743169924377727394
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13799,6 +13783,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3032738810768452479, guid: d69b131514754184b8051fb1267bde03,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -1.9999961
+      objectReference: {fileID: 0}
+    - target: {fileID: 3032738810768452479, guid: d69b131514754184b8051fb1267bde03,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -2.999999
       objectReference: {fileID: 0}
     - target: {fileID: 5822740613482821815, guid: d69b131514754184b8051fb1267bde03,
         type: 3}
@@ -14283,6 +14277,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: PoliceStation
       objectReference: {fileID: 0}
+    - target: {fileID: 6001652867207254908, guid: 5da73367c73908340b9b9736afe5b13b,
+        type: 3}
+      propertyPath: m_Name
+      value: wallDoubleDoorA
+      objectReference: {fileID: 0}
     - target: {fileID: 6144686127650428706, guid: 5da73367c73908340b9b9736afe5b13b,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -14384,21 +14383,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 4575874641549102068}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!4 &8575001736057285629
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2522305909015337782}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0.70710576, z: -0, w: 0.7071079}
-  m_LocalPosition: {x: -31, y: 5.34, z: -8}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
 --- !u!33 &9092262431850425858
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -14417,7 +14401,7 @@ SceneRoots:
   - {fileID: 366760747}
   - {fileID: 743264691}
   - {fileID: 264908869}
-  - {fileID: 8575001736057285629}
+  - {fileID: 330675928}
   - {fileID: 7883804503574460552}
   - {fileID: 2791158375999685859}
   - {fileID: 447648778}
@@ -14437,7 +14421,6 @@ SceneRoots:
   - {fileID: 1588910664}
   - {fileID: 2084989013}
   - {fileID: 1718028673}
-  - {fileID: 330675928}
   - {fileID: 525173960}
   - {fileID: 2028422634}
   - {fileID: 1835786537}

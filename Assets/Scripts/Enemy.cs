@@ -14,6 +14,7 @@ public class Enemy : MonoBehaviour
     public Transform target;
     public float min_range;
     public float max_range;
+    public int health = 5;
 
     private void Update()
     {
@@ -33,5 +34,16 @@ public class Enemy : MonoBehaviour
             }
             
         }
+
+        if (health <= 0)
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    public void damage()
+    {
+        Debug.Log("Zombie took damage");
+        health -= 1;
     }
 }

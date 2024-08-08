@@ -33,6 +33,9 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
+        // Update GameManager in case of scene change
+        gameManager = GameObject.Find("GameManager");
+
         // Draw debug interaction raycast
         Debug.DrawLine(playerCamera.position, playerCamera.position + (playerCamera.forward * interactionDistance), Color.red);
 
@@ -65,7 +68,7 @@ public class Player : MonoBehaviour
                 // Press E to interact
                 if (Input.GetKeyDown(KeyCode.E))
                 {
-                    sceneChanger.SendMessage("ChangeScene", 1);
+                    sceneChanger.SendMessage("ChangeScene", 0);
                 }
             }
 
@@ -126,7 +129,7 @@ public class Player : MonoBehaviour
                 {
                     // Add to inventory
                     Destroy(hitInteract.transform.gameObject);
-                    axeCollected = true;
+                    gameManager.SendMessage("pickupAxe");
                 }
             }
             // Ray hits shotgun
@@ -141,7 +144,7 @@ public class Player : MonoBehaviour
                 {
                     // Add to inventory
                     Destroy(hitInteract.transform.gameObject);
-                    shotgunCollected = true;
+                    gameManager.SendMessage("pickupShotgun");
                 }
             }
             // Ray hits rifle
@@ -156,7 +159,7 @@ public class Player : MonoBehaviour
                 {
                     // Add to inventory
                     Destroy(hitInteract.transform.gameObject);
-                    rifleCollected = true;
+                    gameManager.SendMessage("pickupRifle");
                 }
             }
             // Ray hits medkit
@@ -171,7 +174,7 @@ public class Player : MonoBehaviour
                 {
                     // Add to inventory
                     Destroy(hitInteract.transform.gameObject);
-                    medkitsCollected++;
+                    gameManager.SendMessage("pickupMedkit", 1);
                 }
             }
 
@@ -189,6 +192,7 @@ public class Player : MonoBehaviour
             description.gameObject.SetActive(false);
         }
 
+
         // Toggle flashlight
         if (Input.GetKeyDown(KeyCode.F))
         {
@@ -198,6 +202,7 @@ public class Player : MonoBehaviour
 
 
         //Check if player has axe
+        axeCollected = gameManager.GetComponent<GameManager>().axeCollected;
         if (axeCollected)
         {
             //If player presses 1
@@ -211,6 +216,7 @@ public class Player : MonoBehaviour
             }
         }
         //Check if player has shotgun
+        shotgunCollected = gameManager.GetComponent<GameManager>().shotgunCollected;
         if (shotgunCollected)
         {
             //If player presses 2
@@ -224,6 +230,7 @@ public class Player : MonoBehaviour
             }
         }
         //Check if player has rifle
+        rifleCollected = gameManager.GetComponent<GameManager>().rifleCollected;
         if (rifleCollected)
         {
             //If player presses 3
@@ -237,6 +244,7 @@ public class Player : MonoBehaviour
             }
         }
         //Check if player has medkit
+        medkitsCollected = gameManager.GetComponent<GameManager>().medkitsCollected;
         if (medkitsCollected >= 1)
         {
             //If player presses 4
@@ -250,7 +258,7 @@ public class Player : MonoBehaviour
             }
         }
 
-        if (Physics.Raycast(playerCamera.position, playerCamera.forward, out RaycastHit hitEnemy, 10))
+        if (Physics.Raycast(playerCamera.position, playerCamera.forward, out RaycastHit hitEnemy, 15))
         {
 
             if (hitEnemy.transform.CompareTag("Enemy") && rifle.activeSelf == true)
@@ -270,9 +278,12 @@ public class Player : MonoBehaviour
             if (Input.GetButtonDown("Fire1"))
             {
                 // Heal player
-                gameManager = GameObject.Find("GameManager");
                 gameManager.GetComponent<GameManager>().AdjustHealth(30);
-                medkitsCollected--;
+
+                // Update medkit amount
+                gameManager.SendMessage("pickupMedkit", -1);
+                medkitsCollected = gameManager.GetComponent<GameManager>().medkitsCollected;
+
                 if (medkitsCollected <= 0)
                 {
                     medkit.SetActive(false);

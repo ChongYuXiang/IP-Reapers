@@ -12,7 +12,11 @@ public class GameManager : MonoBehaviour
 {
     public int currentHealth = 100;
     public int currentFuel = 0;
-    private bool keyGot = false;
+    public bool keyGot = false;
+    public bool axeCollected = false;
+    public bool shotgunCollected = false;
+    public bool rifleCollected = false;
+    public int medkitsCollected = 0;
 
     public static GameManager instance;
     public GameObject sceneChanger;
@@ -41,9 +45,28 @@ public class GameManager : MonoBehaviour
         if (currentHealth <= 0)
         {
             // Game over scene
+            sceneChanger = GameObject.Find("Scene Changer");
             sceneChanger.SendMessage("ChangeScene", 5);
             Debug.Log("scene changed");
             Destroy(gameObject);
         }
+    }
+
+    // To save inventory between scenes
+    public void pickupAxe()
+    {
+        axeCollected = true;
+    }
+    public void pickupShotgun()
+    {
+        shotgunCollected = true;
+    }
+    public void pickupRifle()
+    {
+        rifleCollected = true;
+    }
+    public void pickupMedkit(int change)
+    {
+        medkitsCollected += change;
     }
 }

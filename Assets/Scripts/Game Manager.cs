@@ -15,7 +15,7 @@ public class GameManager : MonoBehaviour
     private bool keyGot = false;
 
     public static GameManager instance;
-    public GameObject sceneManager;
+    public GameObject sceneChanger;
 
     // Dont destroy on load
     private void Awake()
@@ -31,17 +31,18 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Call to decrease health
-    public void DecreaseHealth(int HealthToRemove)
+    // Call to adjust health
+    public void AdjustHealth(int HealthToChange)
     {
-        currentHealth -= HealthToRemove;
+        currentHealth += HealthToChange;
+        Debug.Log(currentHealth);
 
         // Player dies
         if (currentHealth <= 0)
         {
             // Game over scene
-            sceneManager = GameObject.Find("SceneManager");
-            sceneManager.SendMessage("ChangeScene", 5);
+            sceneChanger.SendMessage("ChangeScene", 5);
+            Debug.Log("scene changed");
             Destroy(gameObject);
         }
     }

@@ -1,32 +1,76 @@
+/* Author: Chong Yu Xiang  
+ * Filename: Door
+ * Descriptions: Opening and closing doors
+ */
+
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEditor.IMGUI.Controls.PrimitiveBoundsHandle;
 
-public class Door : MonoBehaviour
+public class Barrier : MonoBehaviour
 {
+    private bool opened = false;
+    private bool turning = false;
+    private float openDuration = 0.8f;
+    private float currentDuration;
 
-    IEnumerator Change()
+    private Vector3 startRotation;
+    private Vector3 targetRotation;
+
+    private void Update()
     {
-        if (transform.eulerAngles.y == 0)
+        if (turning)
         {
-            transform.eulerAngles = new Vector3(0, 359, 0);
-            while (transform.eulerAngles.y > 270)
+            currentDuration += Time.deltaTime;
+            float t = currentDuration / openDuration;
+            transform.eulerAngles = Vector3.Lerp(startRotation, targetRotation, t);
+
+            if (currentDuration >= openDuration)
             {
-                transform.Rotate(0, -110 * Time.deltaTime, 0);
-                yield return new WaitForEndOfFrame();
+                currentDuration = 0f;
+                turning = false;
+                transform.eulerAngles = targetRotation;
+                opened = !opened;
             }
-            transform.eulerAngles = new Vector3(0, 270, 0);
         }
-        else if (transform.eulerAngles.y == 270)
+    }
+
+    //Handles the opening of door
+    public void OpenDoor()
+    {
+        if (!turning)
         {
-            while (transform.eulerAngles.y < 357)
-            {
-                Debug.Log(transform.eulerAngles.y);
-                transform.Rotate(0, 110 * Time.deltaTime, 0);
-                yield return new WaitForEndOfFrame();
-            }
-            transform.eulerAngles = new Vector3(0, 0, 0);
+            startRotation = transform.eulerAngles;
+            targetRotation = startRotation;
+            targetRotation.y -= 90f;
+
+            turning = true;
+        }
+    }
+
+    public void CloseDoor()
+    {
+        if (!turning)
+        {
+            startRotation = transform.eulerAngles;
+            targetRotation = startRotation;
+            targetRotation.y += 90f;
+
+            turning = true;
+        }
+    }
+
+    public void Change()
+    {
+        if (!opened)
+        {
+            OpenDoor();
+        }
+        else
+        {
+            CloseDoor();
         }
     }
 }

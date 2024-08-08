@@ -1,3 +1,8 @@
+/* Author: Chong Yu Xiang  
+ * Filename: BasicZombie
+ * Descriptions: FSM for 'Undead' enemy class
+ */
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,18 +17,19 @@ public class BasicZombie : MonoBehaviour
     public float max_range;
     public int health = 5;
 
-    string currentState;
-    string nextState;
-
+    private GameObject gameManager;
+    private string currentState;
+    private string nextState;
     private float dist;
+    private Animator animator;
 
     private void Start()
     {
+        animator = GetComponent<Animator>();
         dist = Vector3.Distance(zombie.transform.position, target.transform.position);
         currentState = "patrol";
         nextState = "patrol";
         SwitchState();
-
     }
     private void SwitchState()
     {
@@ -56,10 +62,6 @@ public class BasicZombie : MonoBehaviour
         {
             yield return new WaitForEndOfFrame();
         }
-        Debug.Log(dist);
-        Debug.Log(min_range);
-        Debug.Log(max_range);
-
         nextState = "chasing";
         yield return new WaitForEndOfFrame();
         SwitchState();
@@ -67,6 +69,7 @@ public class BasicZombie : MonoBehaviour
 
     IEnumerator chasing()
     {
+        animator.SetTrigger("chase");
         while (dist > min_range)
         {
             zombie.stoppingDistance = min_range;
@@ -80,6 +83,8 @@ public class BasicZombie : MonoBehaviour
 
     IEnumerator attacking()
     {
+        StartCoroutine(attackLoop());
+        animator.SetTrigger("attack");
         while (dist <= min_range)
         {
             transform.LookAt(target.position);
@@ -93,8 +98,20 @@ public class BasicZombie : MonoBehaviour
 
     IEnumerator dying()
     {
-        yield return new WaitForSeconds(1);
+        zombie.SetDestination(zombie.transform.position);
+        animator.SetTrigger("death");
+        yield return new WaitForSeconds(1.5f);
         Destroy(gameObject);
+    }
+
+    IEnumerator attackLoop()
+    {
+        while (true)
+        {
+            gameManager = GameObject.Find("GameManager");
+            gameManager.GetComponent<GameManager>().AdjustHealth(-15);
+            yield return new WaitForSeconds(1);
+        }
     }
 }
 

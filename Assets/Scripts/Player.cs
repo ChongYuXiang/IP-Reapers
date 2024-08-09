@@ -20,14 +20,8 @@ public class Player : MonoBehaviour
     public GameObject flashlight;
 
     public GameObject axe;
-    private bool axeCollected = false;
-
     public GameObject shotgun;
-    private bool shotgunCollected = false;
-
     public GameObject rifle;
-    private bool rifleCollected = false;
-
     public GameObject medkit;
     private int medkitsCollected = 0;
 
@@ -59,16 +53,16 @@ public class Player : MonoBehaviour
             }
 
             // Ray hits player house entrance
-            else if (hitInteract.transform.name == "doorRestart")
+            else if (hitInteract.transform.name == "doorHome")
             {
                 // Activate and change prompt
-                description.text = "Press E to restart game";
+                description.text = "Press E to enter";
                 description.gameObject.SetActive(true);
 
                 // Press E to interact
                 if (Input.GetKeyDown(KeyCode.E))
                 {
-                    sceneChanger.SendMessage("ChangeScene", 0);
+                    sceneChanger.SendMessage("ChangeScene", 1);
                 }
             }
 
@@ -130,6 +124,7 @@ public class Player : MonoBehaviour
                     // Add to inventory
                     Destroy(hitInteract.transform.gameObject);
                     gameManager.SendMessage("pickupAxe");
+                    description.gameObject.SetActive(false);
                 }
             }
             // Ray hits shotgun
@@ -145,6 +140,7 @@ public class Player : MonoBehaviour
                     // Add to inventory
                     Destroy(hitInteract.transform.gameObject);
                     gameManager.SendMessage("pickupShotgun");
+                    description.gameObject.SetActive(false);
                 }
             }
             // Ray hits rifle
@@ -160,6 +156,7 @@ public class Player : MonoBehaviour
                     // Add to inventory
                     Destroy(hitInteract.transform.gameObject);
                     gameManager.SendMessage("pickupRifle");
+                    description.gameObject.SetActive(false);
                 }
             }
             // Ray hits medkit
@@ -175,15 +172,77 @@ public class Player : MonoBehaviour
                     // Add to inventory
                     Destroy(hitInteract.transform.gameObject);
                     gameManager.SendMessage("pickupMedkit", 1);
+                    description.gameObject.SetActive(false);
                 }
             }
 
+            // Ray hits fuel
+            else if (hitInteract.transform.name == "FuelCanister")
+            {
+                // Activate and change prompt
+                description.text = "Press E to pick up fuel";
+                description.gameObject.SetActive(true);
+
+                // Press E to interact
+                if (Input.GetKeyDown(KeyCode.E))
+                {
+                    // Add to inventory
+                    Destroy(hitInteract.transform.gameObject);
+                    gameManager.SendMessage("pickupFuel", 1);
+                    description.gameObject.SetActive(false);
+                }
+            }
+            // Ray hits car key
+            else if (hitInteract.transform.name == "CarKey")
+            {
+                // Activate and change prompt
+                description.text = "Press E to pick up car key";
+                description.gameObject.SetActive(true);
+
+                // Press E to interact
+                if (Input.GetKeyDown(KeyCode.E))
+                {
+                    // Add to inventory
+                    Destroy(hitInteract.transform.gameObject);
+                    gameManager.SendMessage("pickupKey");
+                    description.gameObject.SetActive(false);
+                }
+            }
+
+            // Ray hits police car
+            else if (hitInteract.transform.name == "carPolice")
+            {
+                gameManager.SendMessage("completionCheck");
+
+                if (gameManager.GetComponent<GameManager>().completed)
+                {
+                    // Activate and change prompt
+                    description.text = "Press E to escape";
+                    description.gameObject.SetActive(true);
+
+                    // Press E to interact
+                    if (Input.GetKeyDown(KeyCode.E))
+                    {
+                        // Change scene to town
+                        sceneChanger.SendMessage("ChangeScene", 4);
+                        Destroy(gameManager);
+                    }
+                }
+                else
+                {
+                    // Activate and change prompt
+                    description.text = "You cannot use this car yet\n" + gameManager.GetComponent<GameManager>().currentFuel + "/14 fuel, " + gameManager.GetComponent<GameManager>().currentKey + "/1 key";
+                    description.gameObject.SetActive(true);
+                }
+            }
             // Not looking at important object
             else
             {
                 // Deactivate prompt
                 description.gameObject.SetActive(false);
             }
+
+
         }
         // Not looking at any object
         else
@@ -202,8 +261,7 @@ public class Player : MonoBehaviour
 
 
         //Check if player has axe
-        axeCollected = gameManager.GetComponent<GameManager>().axeCollected;
-        if (axeCollected)
+        if (gameManager.GetComponent<GameManager>().axeCollected)
         {
             //If player presses 1
             if (Input.GetKeyDown(KeyCode.Alpha1))
@@ -213,11 +271,13 @@ public class Player : MonoBehaviour
                 shotgun.SetActive(false);
                 medkit.SetActive(false);
                 axe.SetActive(!axe.activeInHierarchy);
+
+                //Activate axe functions
+                StartCoroutine(axeAttack());
             }
         }
         //Check if player has shotgun
-        shotgunCollected = gameManager.GetComponent<GameManager>().shotgunCollected;
-        if (shotgunCollected)
+        if (gameManager.GetComponent<GameManager>().shotgunCollected)
         {
             //If player presses 2
             if (Input.GetKeyDown(KeyCode.Alpha2))
@@ -227,11 +287,21 @@ public class Player : MonoBehaviour
                 axe.SetActive(false);
                 medkit.SetActive(false);
                 shotgun.SetActive(!shotgun.activeInHierarchy);
+                gameManager.GetComponent<GameManager>().updateAmmo("shotgun");
+
+                //Activate shotgun functions
+                StartCoroutine(shotgunAttack());
+            }
+            if (gameManager.GetComponent<GameManager>().rifleAmmo != 6 && shotgun.activeSelf)
+            {
+                if (Input.GetKeyDown(KeyCode.R))
+                {
+                    StartCoroutine(shotgunReload());
+                }
             }
         }
         //Check if player has rifle
-        rifleCollected = gameManager.GetComponent<GameManager>().rifleCollected;
-        if (rifleCollected)
+        if (gameManager.GetComponent<GameManager>().rifleCollected)
         {
             //If player presses 3
             if (Input.GetKeyDown(KeyCode.Alpha3))
@@ -241,11 +311,21 @@ public class Player : MonoBehaviour
                 axe.SetActive(false);
                 medkit.SetActive(false);
                 rifle.SetActive(!rifle.activeInHierarchy);
+                gameManager.GetComponent<GameManager>().updateAmmo("rifle");
+
+                //Activate rifle functions
+                StartCoroutine(rifleAttack());
+            }
+            if (gameManager.GetComponent<GameManager>().rifleAmmo != 30 && rifle.activeSelf) 
+            {
+                if (Input.GetKeyDown(KeyCode.R))
+                {
+                    StartCoroutine(rifleReload());
+                }
             }
         }
         //Check if player has medkit
-        medkitsCollected = gameManager.GetComponent<GameManager>().medkitsCollected;
-        if (medkitsCollected >= 1)
+        if (gameManager.GetComponent<GameManager>().medkitsCollected >= 1)
         {
             //If player presses 4
             if (Input.GetKeyDown(KeyCode.Alpha4))
@@ -254,28 +334,16 @@ public class Player : MonoBehaviour
                 shotgun.SetActive(false);
                 axe.SetActive(false);
                 rifle.SetActive(false);
-                medkit.SetActive(!rifle.activeInHierarchy);
+                medkit.SetActive(!medkit.activeInHierarchy);
+                gameManager.GetComponent<GameManager>().updateAmmo("medkit");
             }
         }
 
-        if (Physics.Raycast(playerCamera.position, playerCamera.forward, out RaycastHit hitEnemy, 15))
-        {
-
-            if (hitEnemy.transform.CompareTag("Enemy") && rifle.activeSelf == true)
-            {
-                // Click to interact
-                if (Input.GetButtonDown("Fire1"))
-                {
-                    // Damage enemy
-                    hitEnemy.transform.gameObject.SendMessage("damage");
-                }
-            }
-        }
-
+        // Use medkit
         if (medkit.activeSelf == true)
         {
-            // Click to use
-            if (Input.GetButtonDown("Fire1"))
+            // If clicking and health is not already max
+            if (Input.GetButtonDown("Fire1") && gameManager.GetComponent<GameManager>().currentHealth != 100)
             {
                 // Heal player
                 gameManager.GetComponent<GameManager>().AdjustHealth(30);
@@ -283,12 +351,107 @@ public class Player : MonoBehaviour
                 // Update medkit amount
                 gameManager.SendMessage("pickupMedkit", -1);
                 medkitsCollected = gameManager.GetComponent<GameManager>().medkitsCollected;
+                gameManager.GetComponent<GameManager>().updateAmmo("medkit");
 
+                // Unequip if no medkits left
                 if (medkitsCollected <= 0)
                 {
                     medkit.SetActive(false);
                 }
             }
+        }
+
+        // Remove ammo text when not holding a gun
+        if (rifle.activeSelf == false && shotgun.activeSelf == false && medkit.activeSelf == false)
+        {
+            gameManager.GetComponent<GameManager>().updateAmmo("na");
+        }
+
+    }
+
+    // Rifle functions
+    IEnumerator rifleAttack()
+    {
+        // While rifle equipped
+        while (rifle.activeSelf == true)
+        {
+            // Rifle has ammo
+            if (gameManager.GetComponent<GameManager>().rifleAmmo > 0)
+            {
+                // When click
+                if (Input.GetButton("Fire1"))
+                {
+                    if (Physics.Raycast(playerCamera.position, playerCamera.forward, out RaycastHit rifleHit, 15))
+                    {
+                        if (rifleHit.transform.gameObject.CompareTag("Enemy"))
+                        {
+                            rifleHit.transform.gameObject.SendMessage("damage", 25);
+                        }
+                    }
+                    gameManager.GetComponent<GameManager>().rifleShot("shoot");
+                    yield return new WaitForSeconds(0.16f);
+                }
+            }
+            yield return new WaitForEndOfFrame();
+        } 
+    }
+    IEnumerator rifleReload()
+    {
+        yield return new WaitForSeconds(1);
+        gameManager.GetComponent<GameManager>().rifleShot("reload");
+    }
+
+    // Shotgun functions
+    IEnumerator shotgunAttack()
+    {
+        // While rifle equipped
+        while (shotgun.activeSelf == true)
+        {
+            // Rifle has ammo
+            if (gameManager.GetComponent<GameManager>().shotgunAmmo > 0)
+            {
+                // When click
+                if (Input.GetButton("Fire1"))
+                {
+                    if (Physics.Raycast(playerCamera.position, playerCamera.forward, out RaycastHit shotgunHit, 6))
+                    {
+                        if (shotgunHit.transform.gameObject.CompareTag("Enemy"))
+                        {
+                            shotgunHit.transform.gameObject.SendMessage("damage", 100);
+                        }
+                    }
+                    gameManager.GetComponent<GameManager>().shotgunShot("shoot");
+                    yield return new WaitForSeconds(1f);
+                }
+            }
+            yield return new WaitForEndOfFrame();
+        }
+    }
+    IEnumerator shotgunReload()
+    {
+        yield return new WaitForSeconds(1);
+        gameManager.GetComponent<GameManager>().shotgunShot("reload");
+    }
+
+    // Axe function
+    IEnumerator axeAttack()
+    {
+        // While rifle equipped
+        while (axe.activeSelf == true)
+        {
+            // When click
+            if (Input.GetButton("Fire1"))
+            {
+                if (Physics.Raycast(playerCamera.position, playerCamera.forward, out RaycastHit axeHit, 3))
+                {
+                    if (axeHit.transform.gameObject.CompareTag("Enemy"))
+                    {
+                        axeHit.transform.gameObject.SendMessage("damage", 200);
+                    }
+                }
+                yield return new WaitForSeconds(0.75f);
+            }
+            yield return new WaitForEndOfFrame();
         }
     }
 }

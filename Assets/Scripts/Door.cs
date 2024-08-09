@@ -8,9 +8,12 @@ using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.AI;
 
-public class Barrier : MonoBehaviour
+public class Door : MonoBehaviour
 {
+    public NavMeshObstacle EntranceForAI;
+
     private bool opened = false;
     private bool turning = false;
     private float openDuration = 0.8f;
@@ -26,6 +29,7 @@ public class Barrier : MonoBehaviour
             currentDuration += Time.deltaTime;
             float t = currentDuration / openDuration;
             transform.eulerAngles = Vector3.Lerp(startRotation, targetRotation, t);
+            gameObject.GetComponent<MeshCollider>().enabled = false;
 
             if (currentDuration >= openDuration)
             {
@@ -34,6 +38,10 @@ public class Barrier : MonoBehaviour
                 transform.eulerAngles = targetRotation;
                 opened = !opened;
             }
+        }
+        else
+        {
+            gameObject.GetComponent<MeshCollider>().enabled = true;
         }
     }
 
@@ -67,10 +75,12 @@ public class Barrier : MonoBehaviour
         if (!opened)
         {
             OpenDoor();
+            EntranceForAI.enabled = false;
         }
         else
         {
             CloseDoor();
+            EntranceForAI.enabled = true;
         }
     }
 }

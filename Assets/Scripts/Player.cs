@@ -25,6 +25,8 @@ public class Player : MonoBehaviour
     public GameObject medkit;
     private int medkitsCollected = 0;
 
+    private bool reloading = false;
+
     private void Update()
     {
         // Update GameManager in case of scene change
@@ -223,7 +225,7 @@ public class Player : MonoBehaviour
                     // Press E to interact
                     if (Input.GetKeyDown(KeyCode.E))
                     {
-                        // Change scene to town
+                        // Change scene to victory
                         sceneChanger.SendMessage("ChangeScene", 4);
                         Destroy(gameManager);
                     }
@@ -231,7 +233,7 @@ public class Player : MonoBehaviour
                 else
                 {
                     // Activate and change prompt
-                    description.text = "You cannot use this car yet\n" + gameManager.GetComponent<GameManager>().currentFuel + "/14 fuel, " + gameManager.GetComponent<GameManager>().currentKey + "/1 key";
+                    description.text = "You cannot use this car yet\n" + gameManager.GetComponent<GameManager>().currentFuel + "/15 fuel, " + gameManager.GetComponent<GameManager>().currentKey + "/1 key";
                     description.gameObject.SetActive(true);
                 }
             }
@@ -271,6 +273,7 @@ public class Player : MonoBehaviour
                 shotgun.SetActive(false);
                 medkit.SetActive(false);
                 axe.SetActive(!axe.activeInHierarchy);
+                gameManager.GetComponent<GameManager>().updateColors("axe", axe.activeInHierarchy);
 
                 //Activate axe functions
                 StartCoroutine(axeAttack());
@@ -287,6 +290,7 @@ public class Player : MonoBehaviour
                 axe.SetActive(false);
                 medkit.SetActive(false);
                 shotgun.SetActive(!shotgun.activeInHierarchy);
+                gameManager.GetComponent<GameManager>().updateColors("shotgun", shotgun.activeInHierarchy);
                 gameManager.GetComponent<GameManager>().updateAmmo("shotgun");
 
                 //Activate shotgun functions
@@ -311,6 +315,7 @@ public class Player : MonoBehaviour
                 axe.SetActive(false);
                 medkit.SetActive(false);
                 rifle.SetActive(!rifle.activeInHierarchy);
+                gameManager.GetComponent<GameManager>().updateColors("rifle", rifle.activeInHierarchy);
                 gameManager.GetComponent<GameManager>().updateAmmo("rifle");
 
                 //Activate rifle functions
@@ -335,6 +340,7 @@ public class Player : MonoBehaviour
                 axe.SetActive(false);
                 rifle.SetActive(false);
                 medkit.SetActive(!medkit.activeInHierarchy);
+                gameManager.GetComponent<GameManager>().updateColors("medkit", medkit.activeInHierarchy);
                 gameManager.GetComponent<GameManager>().updateAmmo("medkit");
             }
         }
@@ -346,7 +352,7 @@ public class Player : MonoBehaviour
             if (Input.GetButtonDown("Fire1") && gameManager.GetComponent<GameManager>().currentHealth != 100)
             {
                 // Heal player
-                gameManager.GetComponent<GameManager>().AdjustHealth(30);
+                gameManager.GetComponent<GameManager>().AdjustHealth(60);
 
                 // Update medkit amount
                 gameManager.SendMessage("pickupMedkit", -1);
@@ -379,13 +385,13 @@ public class Player : MonoBehaviour
             if (gameManager.GetComponent<GameManager>().rifleAmmo > 0)
             {
                 // When click
-                if (Input.GetButton("Fire1"))
+                if (Input.GetButton("Fire1") && !reloading)
                 {
-                    if (Physics.Raycast(playerCamera.position, playerCamera.forward, out RaycastHit rifleHit, 15))
+                    if (Physics.Raycast(playerCamera.position, playerCamera.forward, out RaycastHit rifleHit, 25))
                     {
                         if (rifleHit.transform.gameObject.CompareTag("Enemy"))
                         {
-                            rifleHit.transform.gameObject.SendMessage("damage", 25);
+                            rifleHit.transform.gameObject.SendMessage("damage", 35);
                         }
                     }
                     gameManager.GetComponent<GameManager>().rifleShot("shoot");
@@ -397,8 +403,14 @@ public class Player : MonoBehaviour
     }
     IEnumerator rifleReload()
     {
-        yield return new WaitForSeconds(1);
-        gameManager.GetComponent<GameManager>().rifleShot("reload");
+        reloading = true;
+        yield return new WaitForSeconds(0.8f);
+        if (rifle.activeSelf)
+        {
+            gameManager.GetComponent<GameManager>().rifleShot("reload");
+        }
+        yield return new WaitForSeconds(0.2f);
+        reloading = false;
     }
 
     // Shotgun functions
@@ -411,9 +423,9 @@ public class Player : MonoBehaviour
             if (gameManager.GetComponent<GameManager>().shotgunAmmo > 0)
             {
                 // When click
-                if (Input.GetButton("Fire1"))
+                if (Input.GetButton("Fire1") && !reloading)
                 {
-                    if (Physics.Raycast(playerCamera.position, playerCamera.forward, out RaycastHit shotgunHit, 6))
+                    if (Physics.Raycast(playerCamera.position, playerCamera.forward, out RaycastHit shotgunHit, 10))
                     {
                         if (shotgunHit.transform.gameObject.CompareTag("Enemy"))
                         {
@@ -429,8 +441,14 @@ public class Player : MonoBehaviour
     }
     IEnumerator shotgunReload()
     {
-        yield return new WaitForSeconds(1);
-        gameManager.GetComponent<GameManager>().shotgunShot("reload");
+        reloading = true;
+        yield return new WaitForSeconds(0.8f);
+        if (shotgun.activeSelf)
+        {
+            gameManager.GetComponent<GameManager>().shotgunShot("reload");
+        }
+        yield return new WaitForSeconds(0.2f);
+        reloading = false;
     }
 
     // Axe function

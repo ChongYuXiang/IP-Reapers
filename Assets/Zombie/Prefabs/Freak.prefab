@@ -1497,7 +1497,7 @@ GameObject:
   - component: {fileID: 4657259653799275122}
   - component: {fileID: 7739642737346492416}
   - component: {fileID: 6940578352090099775}
-  - component: {fileID: 2467415763169317359}
+  - component: {fileID: 1095109091854236378}
   m_Layer: 0
   m_Name: Freak
   m_TagString: Enemy
@@ -1513,7 +1513,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4792264307662034650}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1.309628, y: 1.1243156, z: 1.309628}
   m_ConstrainProportionsScale: 0
@@ -1566,16 +1566,16 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 2
-  m_Acceleration: 2
+  m_Speed: 4
+  m_Acceleration: 3
   avoidancePriority: 50
   m_AngularSpeed: 120
-  m_StoppingDistance: 0
+  m_StoppingDistance: 2
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
   m_Height: 2
-  m_BaseOffset: -0.075
+  m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
 --- !u!136 &6940578352090099775
@@ -1601,7 +1601,7 @@ CapsuleCollider:
   m_Height: 1.93
   m_Direction: 1
   m_Center: {x: 0, y: 1.02, z: 0}
---- !u!114 &2467415763169317359
+--- !u!114 &1095109091854236378
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1610,14 +1610,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 4792264307662034650}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 15386657486adb24f8cc2bdf07bf28b5, type: 3}
+  m_Script: {fileID: 11500000, guid: 273517f9165ed534fa31b7e8aace263b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   zombie: {fileID: 7739642737346492416}
   target: {fileID: 0}
-  min_range: 2
-  max_range: 10
-  health: 5
+  health: 300
 --- !u!1 &5027584566604347228
 GameObject:
   m_ObjectHideFlags: 0

@@ -10,6 +10,7 @@ using TMPro;
 using UnityEngine.UI;
 using UnityEngine.Rendering.HighDefinition;
 using UnityEngine.Rendering;
+using UnityEditor;
 
 public class GameManager : MonoBehaviour
 {
@@ -22,9 +23,13 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI keyText;
 
     public bool axeCollected = false;
+    public GameObject axeUI;
     public bool shotgunCollected = false;
+    public GameObject shotgunUI;
     public bool rifleCollected = false;
+    public GameObject rifleUI;
     public int medkitsCollected = 0;
+    public GameObject medkitsUI;
 
     public int shotgunAmmo = 6;
     public int rifleAmmo = 30;
@@ -34,9 +39,9 @@ public class GameManager : MonoBehaviour
     public GameObject sceneChanger;
     public Image healthbar;
 
-    // Dont destroy on load
     private void Awake()
     {
+        // Dont destroy on load
         if (instance == null)
         {
             instance = this;
@@ -52,10 +57,6 @@ public class GameManager : MonoBehaviour
     public void AdjustHealth(int HealthToChange)
     {
         currentHealth += HealthToChange;
-        if (HealthToChange < 0)
-        {
-        }
-
         // Player dies
         if (currentHealth <= 0)
         {
@@ -64,7 +65,6 @@ public class GameManager : MonoBehaviour
             // Game over scene
             sceneChanger = GameObject.Find("SceneChanger");
             sceneChanger.SendMessage("ChangeScene", 5);
-            Debug.Log("scene changed");
             Destroy(gameObject);
         }
         // Player heals over max health
@@ -73,7 +73,6 @@ public class GameManager : MonoBehaviour
             currentHealth = 100;
         }
         healthbarUpdate();
-        Debug.Log(currentHealth);
     }
 
     private void healthbarUpdate()
@@ -97,19 +96,30 @@ public class GameManager : MonoBehaviour
     public void pickupAxe()
     {
         axeCollected = true;
+        axeUI.SetActive(true);
     }
     public void pickupShotgun()
     {
         shotgunCollected = true;
+        shotgunUI.SetActive(true);
     }
     public void pickupRifle()
     {
         rifleCollected = true;
+        rifleUI.SetActive(true);
     }
     public void pickupMedkit(int change)
     {
         medkitsCollected += change;
         updateAmmo("medkit");
+        if (medkitsCollected > 0)
+        {
+            medkitsUI.SetActive(true);
+        }
+        else
+        {
+            medkitsUI.SetActive(false);
+        }
     }
     public void pickupFuel()
     {
@@ -123,7 +133,7 @@ public class GameManager : MonoBehaviour
     }
     public void completionCheck()
     {
-        if (currentKey == 1 && currentFuel == 14)
+        if (currentKey == 1 && currentFuel == 15)
         {
             completed = true;
         }
@@ -173,6 +183,66 @@ public class GameManager : MonoBehaviour
         if (weapon == "medkit")
         {
             ammoText.text = medkitsCollected.ToString();
+        }
+    }
+
+    public void updateColors(string weapon, bool active)
+    {
+        if (weapon == "axe")
+        {
+            if (active)
+            {
+                axeUI.GetComponent<Image>().color = Color.green;
+                shotgunUI.GetComponent<Image>().color = Color.white;
+                rifleUI.GetComponent<Image>().color = Color.white;
+                medkitsUI.GetComponent<Image>().color = Color.white;
+            }
+            else
+            {
+                axeUI.GetComponent<Image>().color = Color.white;
+            }
+        }
+        if (weapon == "shotgun")
+        {
+            if (active)
+            {
+                shotgunUI.GetComponent<Image>().color = Color.green;
+                axeUI.GetComponent<Image>().color = Color.white;
+                rifleUI.GetComponent<Image>().color = Color.white;
+                medkitsUI.GetComponent<Image>().color = Color.white;
+            }
+            else
+            {
+                shotgunUI.GetComponent <Image>().color = Color.white;
+            }
+        }
+        if (weapon == "rifle")
+        {
+            if (active)
+            {
+                rifleUI.GetComponent<Image>().color = Color.green;
+                axeUI.GetComponent<Image>().color = Color.white;
+                shotgunUI.GetComponent<Image>().color = Color.white;
+                medkitsUI.GetComponent<Image>().color = Color.white;
+            }
+            else
+            {
+                rifleUI.GetComponent<Image>().color = Color.white;
+            }
+        }
+        if (weapon == "medkit")
+        {
+            if (active)
+            {
+                medkitsUI.GetComponent<Image>().color = Color.green;
+                rifleUI.GetComponent<Image>().color = Color.white;
+                axeUI.GetComponent<Image>().color = Color.white;
+                shotgunUI.GetComponent<Image>().color = Color.white;
+            }
+            else
+            {
+                medkitsUI.GetComponent<Image>().color = Color.white;
+            }
         }
     }
 }

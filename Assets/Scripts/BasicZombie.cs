@@ -63,15 +63,14 @@ public class BasicZombie : MonoBehaviour
     public void damage(int damageAmt)
     {
         health -= damageAmt;
-        Debug.Log(health);
 
         // If no more health remaining
-        if (health <= 0)
+        if (health <= 0 && currentState != "dying")
         {
             // Switch to dying state
             nextState = "dying";
+            currentState = nextState;
             SwitchState();
-            Debug.Log("IM FUCKING DEAD");
         }
     }
 
@@ -83,10 +82,10 @@ public class BasicZombie : MonoBehaviour
         zombie.stoppingDistance = 0;
 
         // While target is out of range
-        while (dist >= detectRange)
+        while (dist >= detectRange && health == 200)
         {
             // While not moving
-            if (zombie.remainingDistance <= 0.05)
+            if (zombie.remainingDistance <= 0.05 && currentState != "dying")
             {
                 Vector3 point;
                 // Find random location in patrol range
@@ -113,7 +112,7 @@ public class BasicZombie : MonoBehaviour
         zombie.speed = 2.5f;
 
         // While target is further than minimum range
-        while (dist > zombie.stoppingDistance)
+        while (dist > zombie.stoppingDistance && currentState != "dying")
         {
             // Chase target
             zombie.SetDestination(target.position);
@@ -128,8 +127,11 @@ public class BasicZombie : MonoBehaviour
     IEnumerator attacking()
     {
         // Start attacking
-        StartCoroutine(attackLoop());
-        animator.SetTrigger("attack");
+        if (currentState != "dying")
+        {
+            StartCoroutine(attackLoop());
+            animator.SetTrigger("attack");
+        }
 
         // While target is within minimum range
         while (dist <= zombie.stoppingDistance)
@@ -160,13 +162,16 @@ public class BasicZombie : MonoBehaviour
     IEnumerator attackLoop()
     {
         // While target is within minimum range and alive
-        while (dist <= zombie.stoppingDistance && currentState != "dying")
+        while (dist <= zombie.stoppingDistance)
         {
             // Send 10 damage per second
             yield return new WaitForSeconds(0.5f);
-            gameManager = GameObject.Find("GameManager");
-            gameManager.GetComponent<GameManager>().AdjustHealth(-10);
-            yield return new WaitForSeconds(0.5f);
+            if (currentState == "attacking")
+            {
+                gameManager = GameObject.Find("GameManager");
+                gameManager.GetComponent<GameManager>().AdjustHealth(-10);
+                yield return new WaitForSeconds(0.5f);
+            }
         }
     }
 

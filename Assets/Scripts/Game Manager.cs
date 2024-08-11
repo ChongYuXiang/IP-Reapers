@@ -1,6 +1,6 @@
-/* Author: Chong Yu Xiang  
+/* Author: Chong Yu Xiang and Tan Chun Boon, Caleb Matthew
  * Filename: Game Manager
- * Descriptions: For gameobjects to persist through scenes and to keep track of score and health
+ * Descriptions: For gameobjects to persist through scenes and to keep track of health inventory and UI
  */
 
 using System.Collections;
@@ -77,68 +77,86 @@ public class GameManager : MonoBehaviour
 
     private void healthbarUpdate()
     {
+        // Match healthbar visual to health
         healthbar.fillAmount = (float)currentHealth / 100f;
+
+        // Change healthbar to red if low health
         if (currentHealth < 30)
         {
             healthbar.color = Color.red;
         }
+        // Change healthbar to yellow of medium health
         else if (currentHealth < 60)
         {
             healthbar.color = Color.yellow;
         }
+        // Change healthbar to green at high health
         else
         {
             healthbar.color = Color.green;
         }
     }
 
-    // To save inventory between scenes
+    // Update axe status and UI
     public void pickupAxe()
     {
         axeCollected = true;
         axeUI.SetActive(true);
     }
+    // Update shotgun status and UI
     public void pickupShotgun()
     {
         shotgunCollected = true;
         shotgunUI.SetActive(true);
     }
+    // Update rifle status and UI
     public void pickupRifle()
     {
         rifleCollected = true;
         rifleUI.SetActive(true);
     }
-    public void pickupMedkit(int change)
+    // Update medkit amount and UI
+    public void pickupMedkit(int change, bool weaponHeld)
     {
         medkitsCollected += change;
-        updateAmmo("medkit");
         if (medkitsCollected > 0)
         {
+            // Show medkit UI if in inventory
             medkitsUI.SetActive(true);
         }
         else
         {
+            // Hide medkit UI if none remaining
             medkitsUI.SetActive(false);
         }
+        // Only show medkit ammo when not holding another item
+        if (!weaponHeld)
+        {
+            updateAmmo("medkit");
+        }
     }
+    // Update fuel amount and UI
     public void pickupFuel()
     {
         currentFuel++;
         fuelText.text = currentFuel.ToString();
     }
+    // Update key amount and UI
     public void pickupKey()
     {
         currentKey = 1;
         keyText.text = currentKey.ToString();
     }
+    // Check if player has all resources needed to win the game
     public void completionCheck()
     {
-        if (currentKey == 1 && currentFuel == 15)
+        if (currentKey == 1 && currentFuel == 12)
         {
             completed = true;
         }
     }
 
+    // Rifle shooting or reloading based in input
     public void rifleShot(string action)
     {
         if (action == "shoot")
@@ -152,6 +170,8 @@ public class GameManager : MonoBehaviour
             updateAmmo("rifle");
         }
     }
+
+    // Shotgun shooting or reloading based in input
     public void shotgunShot(string action)
     {
         if (action == "shoot")
@@ -166,6 +186,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    // Update ammo count and UI based on weapon that is input
     public void updateAmmo(string weapon)
     {
         if (weapon == "na")
@@ -186,12 +207,14 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    // Update highlighted UI in inventory
     public void updateColors(string weapon, bool active)
     {
         if (weapon == "axe")
         {
             if (active)
             {
+                // Highlight axe, unhighlight others
                 axeUI.GetComponent<Image>().color = Color.green;
                 shotgunUI.GetComponent<Image>().color = Color.white;
                 rifleUI.GetComponent<Image>().color = Color.white;
@@ -206,6 +229,7 @@ public class GameManager : MonoBehaviour
         {
             if (active)
             {
+                // Highlight shotgun, unhighlight others
                 shotgunUI.GetComponent<Image>().color = Color.green;
                 axeUI.GetComponent<Image>().color = Color.white;
                 rifleUI.GetComponent<Image>().color = Color.white;
@@ -220,6 +244,7 @@ public class GameManager : MonoBehaviour
         {
             if (active)
             {
+                // Highlight rifle, unhighlight others
                 rifleUI.GetComponent<Image>().color = Color.green;
                 axeUI.GetComponent<Image>().color = Color.white;
                 shotgunUI.GetComponent<Image>().color = Color.white;
@@ -234,6 +259,7 @@ public class GameManager : MonoBehaviour
         {
             if (active)
             {
+                // Highlight medkit, unhighlight others
                 medkitsUI.GetComponent<Image>().color = Color.green;
                 rifleUI.GetComponent<Image>().color = Color.white;
                 axeUI.GetComponent<Image>().color = Color.white;
@@ -243,6 +269,15 @@ public class GameManager : MonoBehaviour
             {
                 medkitsUI.GetComponent<Image>().color = Color.white;
             }
+        }
+        if (weapon == "all")
+        {
+
+            // Unhighlight all
+            medkitsUI.GetComponent<Image>().color = Color.white;
+            rifleUI.GetComponent<Image>().color = Color.white;
+            axeUI.GetComponent<Image>().color = Color.white;
+            shotgunUI.GetComponent<Image>().color = Color.white;
         }
     }
 }

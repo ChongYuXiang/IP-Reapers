@@ -1,4 +1,4 @@
-/* Author: Chong Yu Xiang  
+/* Author: Tan Chun Boon, Caleb Matthew
  * Filename: Door
  * Descriptions: Opening and closing doors
  */
@@ -28,24 +28,25 @@ public class Door : MonoBehaviour
         {
             currentDuration += Time.deltaTime;
             float t = currentDuration / openDuration;
-            transform.eulerAngles = Vector3.Lerp(startRotation, targetRotation, t);
-            gameObject.GetComponent<MeshCollider>().enabled = false;
+            transform.eulerAngles = Vector3.Lerp(startRotation, targetRotation, t); // Turn door
+            gameObject.GetComponent<MeshCollider>().enabled = false; // Turn off collider when turning
 
-            if (currentDuration >= openDuration)
+            if (currentDuration >= openDuration) // If door is done turning
             {
                 currentDuration = 0f;
-                turning = false;
-                transform.eulerAngles = targetRotation;
-                opened = !opened;
+                turning = false; // Stop turning
+                transform.eulerAngles = targetRotation; // Snap to specific rotation
+                opened = !opened; // Switch state
             }
         }
         else
         {
+            // Turn on collider when stationary
             gameObject.GetComponent<MeshCollider>().enabled = true;
         }
     }
 
-    //Handles the opening of door
+    // Prepare to close door
     public void OpenDoor()
     {
         if (!turning)
@@ -54,10 +55,12 @@ public class Door : MonoBehaviour
             targetRotation = startRotation;
             targetRotation.y -= 90f;
 
-            turning = true;
+            turning = true; // Start turn
+            AudioManager.instance.PlaySFX("Door");
         }
     }
 
+    // Prepare to close door
     public void CloseDoor()
     {
         if (!turning)
@@ -66,19 +69,23 @@ public class Door : MonoBehaviour
             targetRotation = startRotation;
             targetRotation.y += 90f;
 
-            turning = true;
+            turning = true; // Start turn
+            AudioManager.instance.PlaySFX("Door");
         }
     }
 
+    // Call to change state of door
     public void Change()
     {
-        if (!opened)
+        if (!opened) // Door is closed
         {
+            // Open door
             OpenDoor();
             EntranceForAI.enabled = false;
         }
-        else
+        else // Door is open
         {
+            // Close door
             CloseDoor();
             EntranceForAI.enabled = true;
         }

@@ -1,6 +1,6 @@
 /* Author: Chong Yu Xiang  
  * Filename: Player
- * Descriptions: Player raycast
+ * Descriptions: Player raycast interactions and weapons
  */
 
 using System.Collections;
@@ -51,6 +51,7 @@ public class Player : MonoBehaviour
                 {
                     // Change scene to town
                     sceneChanger.SendMessage("ChangeScene", 2);
+                    gameManager.GetComponent<GameManager>().updateColors("all", true);
                 }
             }
 
@@ -64,7 +65,9 @@ public class Player : MonoBehaviour
                 // Press E to interact
                 if (Input.GetKeyDown(KeyCode.E))
                 {
+                    // Change scene to home
                     sceneChanger.SendMessage("ChangeScene", 1);
+                    gameManager.GetComponent<GameManager>().updateColors("all", true);
                 }
             }
 
@@ -80,6 +83,7 @@ public class Player : MonoBehaviour
                 {
                     // Change scene to town
                     sceneChanger.SendMessage("ChangeScene", 3);
+                    gameManager.GetComponent<GameManager>().updateColors("all", true);
                 }
             }
 
@@ -95,6 +99,7 @@ public class Player : MonoBehaviour
                 {
                     // Change scene to town
                     sceneChanger.SendMessage("ChangeScene", 2);
+                    gameManager.GetComponent<GameManager>().updateColors("all", true);
                 }
             }
 
@@ -173,7 +178,16 @@ public class Player : MonoBehaviour
                 {
                     // Add to inventory
                     Destroy(hitInteract.transform.gameObject);
-                    gameManager.SendMessage("pickupMedkit", 1);
+                    if (axe.activeSelf || shotgun.activeSelf || rifle.activeSelf)
+                    {
+                        // If holding weapon
+                        gameManager.GetComponent<GameManager>().pickupMedkit(1, true);
+                    }
+                    else
+                    {
+                        // Not holding weapon
+                        gameManager.GetComponent<GameManager>().pickupMedkit(1, false);
+                    }
                     description.gameObject.SetActive(false);
                 }
             }
@@ -233,7 +247,7 @@ public class Player : MonoBehaviour
                 else
                 {
                     // Activate and change prompt
-                    description.text = "You cannot use this car yet\n" + gameManager.GetComponent<GameManager>().currentFuel + "/15 fuel, " + gameManager.GetComponent<GameManager>().currentKey + "/1 key";
+                    description.text = "You cannot use this car yet\n" + gameManager.GetComponent<GameManager>().currentFuel + "/12 fuel, " + gameManager.GetComponent<GameManager>().currentKey + "/1 key";
                     description.gameObject.SetActive(true);
                 }
             }
@@ -258,6 +272,7 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.F))
         {
             flashlight.SetActive(!flashlight.activeInHierarchy);
+            AudioManager.instance.PlaySFX("Flashlight");
         }
 
 
@@ -298,7 +313,7 @@ public class Player : MonoBehaviour
             }
             if (gameManager.GetComponent<GameManager>().rifleAmmo != 6 && shotgun.activeSelf)
             {
-                if (Input.GetKeyDown(KeyCode.R))
+                if (Input.GetKeyDown(KeyCode.R) && reloading == false)
                 {
                     StartCoroutine(shotgunReload());
                 }
@@ -323,7 +338,7 @@ public class Player : MonoBehaviour
             }
             if (gameManager.GetComponent<GameManager>().rifleAmmo != 30 && rifle.activeSelf) 
             {
-                if (Input.GetKeyDown(KeyCode.R))
+                if (Input.GetKeyDown(KeyCode.R) && reloading == false)
                 {
                     StartCoroutine(rifleReload());
                 }
@@ -358,6 +373,7 @@ public class Player : MonoBehaviour
                 gameManager.SendMessage("pickupMedkit", -1);
                 medkitsCollected = gameManager.GetComponent<GameManager>().medkitsCollected;
                 gameManager.GetComponent<GameManager>().updateAmmo("medkit");
+                AudioManager.instance.PlaySFX("Heal");
 
                 // Unequip if no medkits left
                 if (medkitsCollected <= 0)
@@ -387,6 +403,8 @@ public class Player : MonoBehaviour
                 // When click
                 if (Input.GetButton("Fire1") && !reloading)
                 {
+                    AudioManager.instance.PlaySFX("RifleShot");
+
                     if (Physics.Raycast(playerCamera.position, playerCamera.forward, out RaycastHit rifleHit, 25))
                     {
                         if (rifleHit.transform.gameObject.CompareTag("Enemy"))
@@ -404,9 +422,11 @@ public class Player : MonoBehaviour
     IEnumerator rifleReload()
     {
         reloading = true;
+        AudioManager.instance.PlaySFX("ReloadStart");
         yield return new WaitForSeconds(0.8f);
         if (rifle.activeSelf)
         {
+            AudioManager.instance.PlaySFX("ReloadEnd");
             gameManager.GetComponent<GameManager>().rifleShot("reload");
         }
         yield return new WaitForSeconds(0.2f);
@@ -425,6 +445,8 @@ public class Player : MonoBehaviour
                 // When click
                 if (Input.GetButton("Fire1") && !reloading)
                 {
+                    AudioManager.instance.PlaySFX("ShotgunShot");
+
                     if (Physics.Raycast(playerCamera.position, playerCamera.forward, out RaycastHit shotgunHit, 10))
                     {
                         if (shotgunHit.transform.gameObject.CompareTag("Enemy"))
@@ -442,9 +464,11 @@ public class Player : MonoBehaviour
     IEnumerator shotgunReload()
     {
         reloading = true;
+        AudioManager.instance.PlaySFX("ReloadStart");
         yield return new WaitForSeconds(0.8f);
         if (shotgun.activeSelf)
         {
+            AudioManager.instance.PlaySFX("ReloadEnd");
             gameManager.GetComponent<GameManager>().shotgunShot("reload");
         }
         yield return new WaitForSeconds(0.2f);
@@ -460,14 +484,16 @@ public class Player : MonoBehaviour
             // When click
             if (Input.GetButton("Fire1"))
             {
-                if (Physics.Raycast(playerCamera.position, playerCamera.forward, out RaycastHit axeHit, 3))
+                AudioManager.instance.PlaySFX("AxeSwing");
+
+                if (Physics.Raycast(playerCamera.position, playerCamera.forward, out RaycastHit axeHit, 2))
                 {
                     if (axeHit.transform.gameObject.CompareTag("Enemy"))
                     {
                         axeHit.transform.gameObject.SendMessage("damage", 200);
                     }
                 }
-                yield return new WaitForSeconds(0.75f);
+                yield return new WaitForSeconds(1f);
             }
             yield return new WaitForEndOfFrame();
         }

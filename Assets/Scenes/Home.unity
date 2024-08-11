@@ -7933,13 +7933,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5209846529650102955, guid: f3a11d2e6d748cd479110e7e289208d6,
         type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.008831317
+      objectReference: {fileID: 0}
+    - target: {fileID: 5209846529650102955, guid: f3a11d2e6d748cd479110e7e289208d6,
+        type: 3}
       propertyPath: m_LocalPosition.x
       value: -6.5062284
       objectReference: {fileID: 0}
     - target: {fileID: 5209846529650102955, guid: f3a11d2e6d748cd479110e7e289208d6,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2.1774395
+      value: 2.1
       objectReference: {fileID: 0}
     - target: {fileID: 5209846529650102955, guid: f3a11d2e6d748cd479110e7e289208d6,
         type: 3}
@@ -14413,7 +14418,7 @@ GameObject:
   - component: {fileID: 2080983842}
   - component: {fileID: 2080983841}
   m_Layer: 0
-  m_Name: Text (TMP)
+  m_Name: FloatingText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

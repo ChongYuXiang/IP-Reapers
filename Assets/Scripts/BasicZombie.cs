@@ -17,6 +17,8 @@ public class BasicZombie : MonoBehaviour
     public float patrolRange;
     public Transform centrePoint;
     public int health = 200;
+    public GameObject bloodEffect;
+    public Transform bloodSpot;
 
     private GameObject gameManager;
     private string currentState;
@@ -29,6 +31,10 @@ public class BasicZombie : MonoBehaviour
     private void Start()
     {
         // Set up variables
+        if (target == null)
+        {
+            target = GameObject.Find("PlayerCapsule").transform;
+        }
         animator = GetComponent<Animator>();
         dist = Vector3.Distance(zombie.transform.position, target.transform.position);
 
@@ -57,12 +63,18 @@ public class BasicZombie : MonoBehaviour
         }
         // Update distance from zombie to target
         dist = Vector3.Distance(zombie.transform.position, target.transform.position);
+
+        if (health <= 0)
+        {
+            currentState = "dying";
+        }
     }
 
     // Call to damage zombie
     public void damage(int damageAmt)
     {
         health -= damageAmt;
+        bleed();
 
         // If no more health remaining
         if (health <= 0 && currentState != "dying")
@@ -107,12 +119,15 @@ public class BasicZombie : MonoBehaviour
     IEnumerator chasing()
     {
         // Switch to chasing animation
-        animator.SetTrigger("chase");
-        zombie.stoppingDistance = 2;
-        zombie.speed = 2.5f;
+        if (health > 0)
+        {
+            animator.SetTrigger("chase");
+            zombie.stoppingDistance = 2;
+            zombie.speed = 2.5f;
+        }
 
         // While target is further than minimum range
-        while (dist > zombie.stoppingDistance && currentState != "dying")
+        while (dist > zombie.stoppingDistance && currentState == "chasing")
         {
             // Chase target
             zombie.SetDestination(target.position);
@@ -127,7 +142,8 @@ public class BasicZombie : MonoBehaviour
     IEnumerator attacking()
     {
         // Start attacking
-        if (currentState != "dying")
+        yield return new WaitForSeconds(0.1f);
+        if (health > 0)
         {
             StartCoroutine(attackLoop());
             animator.SetTrigger("attack");
@@ -155,6 +171,8 @@ public class BasicZombie : MonoBehaviour
         switchable = false;
         // Zombie dies
         animator.SetTrigger("death");
+        AudioManager.instance.PlaySFX("ZombieDeath");
+        gameObject.GetComponent<CapsuleCollider>().enabled = false;
         yield return new WaitForSeconds(1.5f);
         Destroy(gameObject);
     }
@@ -170,6 +188,7 @@ public class BasicZombie : MonoBehaviour
             {
                 gameManager = GameObject.Find("GameManager");
                 gameManager.GetComponent<GameManager>().AdjustHealth(-10);
+                AudioManager.instance.PlaySFX("ZombieAttack");
                 yield return new WaitForSeconds(0.5f);
             }
         }
@@ -190,6 +209,13 @@ public class BasicZombie : MonoBehaviour
 
         result = Vector3.zero;
         return false;
+    }
+
+    private void bleed()
+    {
+        // Spawn a blood effect on zombie for 0.3 seconds
+        GameObject clone = (GameObject)Instantiate(bloodEffect, bloodSpot.position, Quaternion.identity);
+        Destroy(clone, 0.3f);
     }
 }
 

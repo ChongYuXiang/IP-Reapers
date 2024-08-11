@@ -1570,7 +1570,7 @@ NavMeshAgent:
   m_Acceleration: 3
   avoidancePriority: 50
   m_AngularSpeed: 120
-  m_StoppingDistance: 2
+  m_StoppingDistance: 2.75
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
@@ -1616,6 +1616,9 @@ MonoBehaviour:
   zombie: {fileID: 7739642737346492416}
   target: {fileID: 0}
   health: 300
+  bloodEffect: {fileID: 7893846013230225762, guid: 2ba7923d1e6ec674bb253ccabdbfbfb6,
+    type: 3}
+  bloodSpot: {fileID: 8765626417726446997}
 --- !u!1 &5027584566604347228
 GameObject:
   m_ObjectHideFlags: 0

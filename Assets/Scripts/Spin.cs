@@ -1,3 +1,8 @@
+/* Author: Chong Yu Xiang  
+ * Filename: Spin
+ * Descriptions: Spin object
+ */
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;

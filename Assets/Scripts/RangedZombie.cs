@@ -1,3 +1,8 @@
+/* Author: Chong Yu Xiang  
+ * Filename: BasicZombie
+ * Descriptions: FSM for 'Bombardier' enemy class
+ */
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,6 +15,8 @@ public class RangedZombie : MonoBehaviour
     public Rigidbody projectile;
     public float detectRange;
     public int health = 100;
+    public GameObject bloodEffect;
+    public Transform bloodSpot;
 
     private GameObject gameManager;
     private string currentState;
@@ -22,6 +29,7 @@ public class RangedZombie : MonoBehaviour
     private void Start()
     {
         // Set up variables
+        target = GameObject.Find("PlayerCapsule").transform;
         animator = GetComponent<Animator>();
         dist = Vector3.Distance(zombie.transform.position, target.transform.position);
 
@@ -50,12 +58,18 @@ public class RangedZombie : MonoBehaviour
         }
         // Update distance from zombie to target
         dist = Vector3.Distance(zombie.transform.position, target.transform.position);
+
+        if (health <= 0)
+        {
+            currentState = "dying";
+        }
     }
 
     // Call to damage zombie
     public void damage(int damageAmt)
     {
         health -= damageAmt;
+        bleed();
 
         // If no more health remaining
         if (health <= 0 && currentState != "dying")
@@ -116,14 +130,12 @@ public class RangedZombie : MonoBehaviour
 
     IEnumerator attacking()
     {
+        yield return new WaitForSeconds(0.1f);
         // Start attacking
-        if (currentState != "dying")
-        {
-            StartCoroutine(attackLoop());
-        }
+        StartCoroutine(attackLoop());
 
         // While target is within minimum range
-        while (dist <= zombie.stoppingDistance)
+        while (dist <= zombie.stoppingDistance && currentState == "attacking")
         {
             // Always look at  target
             transform.LookAt(target.position);
@@ -144,6 +156,8 @@ public class RangedZombie : MonoBehaviour
         switchable = false;
         // Zombie dies
         animator.SetTrigger("death");
+        AudioManager.instance.PlaySFX("ZombieDeath");
+        gameObject.GetComponent<CapsuleCollider>().enabled = false;
         yield return new WaitForSeconds(1.5f);
         Destroy(gameObject);
     }
@@ -151,7 +165,7 @@ public class RangedZombie : MonoBehaviour
     IEnumerator attackLoop()
     {
         // While target is within minimum range and alive
-        while (dist <= zombie.stoppingDistance && currentState != "dying")
+        while (dist <= zombie.stoppingDistance && health > 0)
         {
             // Start attack
             animator.SetTrigger("attack");
@@ -167,14 +181,28 @@ public class RangedZombie : MonoBehaviour
                 // Send 15 damage
                 gameManager = GameObject.Find("GameManager");
                 gameManager.GetComponent<GameManager>().AdjustHealth(-15);
+                AudioManager.instance.PlaySFX("Bombardier");
                 // Wait for attack animation to end
                 yield return new WaitForSeconds(0.2f);
 
+                
                 // Idle in between attacks
-                animator.SetTrigger("idle");
+                if (currentState == "attacking")
+                {
+                    animator.SetTrigger("idle");
+                }
+
+                // Destroy projectile after 1 second
                 yield return new WaitForSeconds(1f);
                 Destroy(instantiatedProjectile.gameObject);
             }
         }
+    }
+
+    private void bleed()
+    {
+        // Spawn a blood effect on zombie for 0.3 seconds
+        GameObject clone = (GameObject)Instantiate(bloodEffect, bloodSpot.position, Quaternion.identity);
+        Destroy(clone, 0.3f);
     }
 }

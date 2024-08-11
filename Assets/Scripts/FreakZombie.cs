@@ -1,3 +1,8 @@
+/* Author: Chong Yu Xiang  
+ * Filename: FreakZombie
+ * Descriptions: FSM for 'Freak' enemy class
+ */
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,6 +13,8 @@ public class FreakZombie : MonoBehaviour
     public NavMeshAgent zombie;
     public Transform target;
     public int health = 300;
+    public GameObject bloodEffect;
+    public Transform bloodSpot;
 
     private GameObject gameManager;
     private string currentState;
@@ -20,6 +27,7 @@ public class FreakZombie : MonoBehaviour
     private void Start()
     {
         // Set up variables
+        target = GameObject.Find("PlayerCapsule").transform;
         animator = GetComponent<Animator>();
         dist = Vector3.Distance(zombie.transform.position, target.transform.position);
 
@@ -54,6 +62,7 @@ public class FreakZombie : MonoBehaviour
     public void damage(int damageAmt)
     {
         health -= damageAmt;
+        bleed();
 
         // If no more health remaining
         if (health <= 0 && currentState != "dying")
@@ -77,6 +86,7 @@ public class FreakZombie : MonoBehaviour
         }
         // Target enters range
         yield return new WaitForEndOfFrame();
+        AudioManager.instance.PlaySFX("Freak");
         nextState = "chasing";
         SwitchState();
     }
@@ -84,7 +94,10 @@ public class FreakZombie : MonoBehaviour
     IEnumerator chasing()
     {
         // Switch to chasing animation
-        animator.SetTrigger("chase");
+        if (health > 0)
+        {
+            animator.SetTrigger("chase");
+        }
 
         // While target is further than minimum range
         while (dist > zombie.stoppingDistance && currentState != "dying")
@@ -101,9 +114,13 @@ public class FreakZombie : MonoBehaviour
 
     IEnumerator attacking()
     {
+        yield return new WaitForSeconds(0.1f);
         // Start attacking
-        StartCoroutine(attackLoop());
-        animator.SetTrigger("attack");
+        if (health > 0)
+        {
+            StartCoroutine(attackLoop());
+            animator.SetTrigger("attack");
+        }
 
         // While target is within minimum range
         while (dist <= zombie.stoppingDistance)
@@ -127,6 +144,8 @@ public class FreakZombie : MonoBehaviour
         switchable = false;
         // Zombie dies
         animator.SetTrigger("death");
+        AudioManager.instance.PlaySFX("ZombieDeath");
+        gameObject.GetComponent<CapsuleCollider>().enabled = false;
         yield return new WaitForSeconds(1.5f);
         Destroy(gameObject);
     }
@@ -142,8 +161,16 @@ public class FreakZombie : MonoBehaviour
             {
                 gameManager = GameObject.Find("GameManager");
                 gameManager.GetComponent<GameManager>().AdjustHealth(-40);
+                AudioManager.instance.PlaySFX("ZombieAttack");
                 yield return new WaitForSeconds(0.5f);
             }
         }
+    }
+
+    private void bleed()
+    {
+        // Spawn a blood effect on zombie for 0.3 seconds
+        GameObject clone = (GameObject)Instantiate(bloodEffect, bloodSpot.position, Quaternion.identity);
+        Destroy(clone, 0.3f);
     }
 }
